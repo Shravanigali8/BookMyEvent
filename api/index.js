@@ -409,18 +409,18 @@ async function deletePastEvents() {
 const PORT = process.env.PORT || 4000;
 
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect("mongodb+srv://mgali1_db_user:Mohan23@cluster0.nizetzu.mongodb.net/?appName=Cluster0")
   .then(() => {
-    console.log("✅ MongoDB Connected");
+    console.log("MongoDB Connected");
 
     // run cleanup on start + hourly
     deletePastEvents();
     setInterval(deletePastEvents, 1000 * 60 * 60);
 
     app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(` Server running on port ${PORT}`);
     });
   })
   .catch((err) => {
-    console.error("❌ MongoDB connection error:", err);
+    console.error(" MongoDB connection error:", err);
   });
