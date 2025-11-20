@@ -1,149 +1,184 @@
-import  { useContext, useState } from 'react';
-import axios from 'axios';
-import { UserContext } from '../UserContext';
+import { useContext, useState } from "react";
+import axios from "axios";
+import { UserContext } from "../UserContext";
+import { useNavigate } from "react-router-dom";
 
 export default function AddEvent() {
-  const {user} = useContext(UserContext);
-  const [formData, setFormData] = useState({
+  const { user } = useContext(UserContext);
+  const navigate = useNavigate();
 
-    owner: user? user.name : "",
+  const [formData, setFormData] = useState({
+    owner: user ? user.name : "",
     title: "",
-    type:"",
+    type: "",
     description: "",
     organizedBy: "",
     eventDate: "",
     eventTime: "",
     location: "",
     ticketPrice: 0,
-    image: '',
-    likes: 0
+    image: null,
+    likes: 0,
+    optional: "",
   });
-
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    setFormData((prevState) => ({ ...prevState, image: file }));
-  };
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (files) {
-      setFormData((prevState) => ({ ...prevState, [name]: files[0] }));
+      setFormData((prev) => ({ ...prev, [name]: files[0] }));
     } else {
-      setFormData((prevState) => ({ ...prevState, [name]: value }));
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    axios
-      .post("/createEvent", formData)
-      .then((response) => {
-        console.log("Event posted successfully:", response.data);
-        
-      })
-      .catch((error) => {
-        console.error("Error posting event:", error);
+
+    try {
+      const data = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value !== null && value !== undefined) {
+          data.append(key, value);
+        }
       });
+
+      const response = await axios.post("/createEvent", data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      console.log("Event created:", response.data);
+      alert("Event created successfully!");
+      navigate("/"); // go to homepage
+    } catch (error) {
+      console.error("Error creating event:", error);
+      alert("Failed to create event. Please try again.");
+      navigate("/"); // still go home
+    }
   };
 
   return (
-    <div className='flex flex-col ml-20 mt-10'>
-      <div><h1 className='font-bold text-[36px] mb-5'>Post an Event</h1></div>
-      
-      <form onSubmit={handleSubmit} className='flex flex-co'>
-      <div className='flex flex-col gap-5'>
-        <label className='flex flex-col'>
+    <div className="flex flex-col ml-20 mt-10">
+      <h1 className="font-bold text-[36px] mb-5">Post an Event</h1>
+
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-5 w-full max-w-xl"
+      >
+        <label className="flex flex-col">
           Title:
           <input
             type="text"
             name="title"
-            className=' rounded mt-2 pl-5 px-4 ring-sky-700 ring-2 h-8 border-none'
+            className="rounded mt-2 pl-5 px-4 ring-sky-700 ring-2 h-8 border-none"
             value={formData.title}
+            onChange={handleChange}
+            required
+          />
+        </label>
+
+        <label className="flex flex-col">
+          Type:
+          <input
+            type="text"
+            name="type"
+            className="rounded mt-2 pl-5 px-4 ring-sky-700 ring-2 h-8 border-none"
+            value={formData.type}
             onChange={handleChange}
           />
         </label>
-        <label className='flex flex-col'>
+
+        <label className="flex flex-col">
           Optional:
           <input
             type="text"
             name="optional"
-            className=' rounded mt-2 pl-5 px-4 ring-sky-700 ring-2 h-8 border-none'
+            className="rounded mt-2 pl-5 px-4 ring-sky-700 ring-2 h-8 border-none"
             value={formData.optional}
             onChange={handleChange}
           />
-        </label >
-        <label className='flex flex-col'>
+        </label>
+
+        <label className="flex flex-col">
           Description:
           <textarea
             name="description"
-            className=' rounded mt-2 pl-5 px-4 py-2 ring-sky-700 ring-2 h-8 border-none'
+            className="rounded mt-2 pl-5 px-4 py-2 ring-sky-700 ring-2 border-none"
             value={formData.description}
             onChange={handleChange}
           />
         </label>
-        <label className='flex flex-col'>
+
+        <label className="flex flex-col">
           Organized By:
           <input
             type="text"
-            className=' rounded mt-2 pl-5 px-4 ring-sky-700 ring-2 h-8 border-none'
             name="organizedBy"
+            className="rounded mt-2 pl-5 px-4 ring-sky-700 ring-2 h-8 border-none"
             value={formData.organizedBy}
             onChange={handleChange}
           />
         </label>
-        <label className='flex flex-col'>
+
+        <label className="flex flex-col">
           Event Date:
           <input
             type="date"
-            className=' rounded mt-2 pl-5 px-4 ring-sky-700 ring-2 h-8 border-none'
             name="eventDate"
+            className="rounded mt-2 pl-5 px-4 ring-sky-700 ring-2 h-8 border-none"
             value={formData.eventDate}
             onChange={handleChange}
+            required
           />
         </label>
-        <label className='flex flex-col'>
+
+        <label className="flex flex-col">
           Event Time:
           <input
             type="time"
             name="eventTime"
-            className=' rounded mt-2 pl-5 px-4 ring-sky-700 ring-2 h-8 border-none'
+            className="rounded mt-2 pl-5 px-4 ring-sky-700 ring-2 h-8 border-none"
             value={formData.eventTime}
             onChange={handleChange}
           />
         </label>
-        <label className='flex flex-col'>
+
+        <label className="flex flex-col">
           Location:
           <input
             type="text"
             name="location"
-            className=' rounded mt-2 pl-5 px-4 ring-sky-700 ring-2 h-8 border-none'
+            className="rounded mt-2 pl-5 px-4 ring-sky-700 ring-2 h-8 border-none"
             value={formData.location}
             onChange={handleChange}
           />
         </label>
-        <label className='flex flex-col'>
+
+        <label className="flex flex-col">
           Ticket Price:
           <input
             type="number"
             name="ticketPrice"
-            className=' rounded mt-2 pl-5 px-4 ring-sky-700 ring-2 h-8 border-none'
+            className="rounded mt-2 pl-5 px-4 ring-sky-700 ring-2 h-8 border-none"
             value={formData.ticketPrice}
             onChange={handleChange}
+            min="0"
           />
         </label>
-        <label className='flex flex-col'>
+
+        <label className="flex flex-col">
           Image:
           <input
             type="file"
             name="image"
-            
-            className=' rounded mt-2 pl-5 px-4 py-10 ring-sky-700 ring-2 h-8 border-none'
-            onChange={handleImageUpload}
+            accept="image/*"
+            className="rounded mt-2 pl-5 px-4 py-2 ring-sky-700 ring-2 border-none"
+            onChange={handleChange}
           />
-        </label >
-        <button className='primary' type="submit">Submit</button>
-        </div>
-        
+        </label>
+
+        <button className="primary mt-4" type="submit">
+          Submit
+        </button>
       </form>
     </div>
   );

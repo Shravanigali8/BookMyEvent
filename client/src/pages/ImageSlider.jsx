@@ -1,6 +1,6 @@
 import React from 'react';
 import Slider from 'react-slick';
-import image1 from "../assets/hero.jpg"
+import image1 from "../assets/hero..jpg"
 
 const ImageWithNoEffect = ({ imageSrc, altText }) => {
   return (

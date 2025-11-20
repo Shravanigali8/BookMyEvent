@@ -11,7 +11,7 @@ export default function Footer() {
         <div className="flex items-center gap-2">
           <FaCopyright className="h-5 w-5 text-gray-400" />
           <span className="text-sm">
-            Book My Event - SSDI. All rights reserved.
+            Book My Event - Mohan. All rights reserved.
           </span>
         </div>
         
